@@ -7,43 +7,54 @@ SELECT * FROM alertas_estoque;
 SELECT * FROM auditoria;
 SELECT * FROM lotes_producao;
 SELECT * FROM lote_insumos;
+SELECT * FROM produtos;            -- Adicionado para cobrir todo o banco
+SELECT * FROM producao_produtos;   -- Adicionado para cobrir todo o banco
 
---- movimentação usuário e insumo ---
+-- ====================================================
+-- RELATÓRIOS E JOINS
+-- ====================================================
+
+--- Movimentação de usuário e insumo ---
 SELECT
     m.id_movimentacao,
-    i.nome AS insumo,
+    i.nome_insumo AS insumo,       -- Atualizado: nome -> nome_insumo
     u.nome AS usuario,
     s.nome_setor,
     m.tipo_movimentacao,
     m.quantidade,
-    m.data_movimentacao
+    m.data_operacao AS data_hora   -- Atualizado: data_movimentacao -> data_operacao
 FROM movimentacoes m
 INNER JOIN insumos i ON m.id_insumo = i.id_insumo
 INNER JOIN usuarios u ON m.id_usuario = u.id_usuario
 INNER JOIN setores s ON m.id_setor = s.id_setor;
 
---- Lotes e insumos utilizados ---
+
+--- Lotes e insumos utilizados na produção ---
 SELECT
     lp.codigo_lote,
-    i.nome,
+    i.nome_insumo,                 -- Atualizado: nome -> nome_insumo
     li.quantidade_utilizada
 FROM lote_insumos li
-INNER JOIN lotes_producao lp
+INNER JOIN lotes_producao lp 
     ON li.id_lote = lp.id_lote
-INNER JOIN insumos i
+INNER JOIN insumos i 
     ON li.id_insumo = i.id_insumo;
 
---- alertas de estoque ---
+
+--- Alertas de estoque ativo ---
 SELECT
     a.id_alerta,
-    i.nome,
+    i.nome_insumo,                 -- Atualizado: nome -> nome_insumo
     a.mensagem,
     a.status_alerta
 FROM alertas_estoque a
-INNER JOIN insumos i
+INNER JOIN insumos i 
     ON a.id_insumo = i.id_insumo;
 
---- verificar estrutura ---
+
+-- ====================================================
+-- VERIFICAÇÃO DE ESTRUTURA DO BANCO
+-- ====================================================
 SHOW TABLES;
 
 DESCRIBE setores;
@@ -55,3 +66,5 @@ DESCRIBE alertas_estoque;
 DESCRIBE auditoria;
 DESCRIBE lotes_producao;
 DESCRIBE lote_insumos;
+DESCRIBE produtos;                 -- Adicionado
+DESCRIBE producao_produtos;
